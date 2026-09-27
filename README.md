@@ -146,6 +146,3 @@ Track these across your test cases and report them in your README:
 3. Pick a category (e.g. "Documentation") and a color/icon (`action.yml`
    already sets `branding`).
 
-## License
-
-MIT — see `LICENSE`.
