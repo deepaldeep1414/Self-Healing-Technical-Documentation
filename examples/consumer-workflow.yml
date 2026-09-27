@@ -1,0 +1,32 @@
+name: Doc Health Check
+
+on:
+  pull_request:
+    paths:
+      - "src/**/*.py"
+      - "docs/**/*.md"
+
+jobs:
+  check-docs:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+      pull-requests: write
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Self-Healing Docs
+        uses: your-org/self-healing-docs@v1
+        with:
+          # Fully free mode: rule-based patches, no LLM key needed.
+          llm_provider: "none"
+          confidence_threshold: "0.75"
+          docs_path: "docs/**/*.md"
+          code_path: "src/**/*.py"
+          auto_merge_high_confidence: "false"
+        # Optional free-tier upgrade instead of "none":
+        #   llm_provider: "groq"
+        #   llm_api_key: ${{ secrets.GROQ_API_KEY }}
+        #   llm_model: "llama-3.1-8b-instant"

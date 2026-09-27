@@ -1,0 +1,32 @@
+name: Self-Test
+
+on:
+  push:
+  pull_request:
+
+jobs:
+  unit-tests:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+      - run: pip install -r requirements.txt
+      - run: pip install pytest
+      - run: PYTHONPATH=src pytest tests/ -v
+
+  action-smoke-test:
+    runs-on: ubuntu-latest
+    needs: unit-tests
+    permissions:
+      contents: read
+    steps:
+      - uses: actions/checkout@v4
+      - name: Run action against bundled demo fixture (free rule-based mode)
+        uses: ./
+        with:
+          llm_provider: "none"
+          confidence_threshold: "0.75"
+          docs_path: "tests/fixtures/demo_repo/docs/**/*.md"
+          code_path: "tests/fixtures/demo_repo/src/**/*.py"

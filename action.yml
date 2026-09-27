@@ -1,0 +1,62 @@
+name: "Self-Healing Technical Documentation"
+description: "Detects code/doc drift, auto-fixes high-confidence staleness, flags the rest for human review."
+branding:
+  icon: "refresh-cw"
+  color: "purple"
+
+inputs:
+  llm_api_key:
+    description: "API key for LLM correction generation. Leave empty to run in free rule-based-only mode."
+    required: false
+    default: ""
+  llm_provider:
+    description: "One of: none, groq, ollama. 'none' = rule-based diff patches only (fully free, no network LLM). 'groq' = free-tier Groq API. 'ollama' = local free model via a sidecar Ollama server."
+    required: false
+    default: "none"
+  llm_model:
+    description: "Model name for the chosen provider (e.g. llama-3.1-8b-instant for groq, llama3 for ollama)."
+    required: false
+    default: "llama-3.1-8b-instant"
+  confidence_threshold:
+    description: "0-1. Corrections at or above this confidence are auto-applied; below are flagged for review."
+    required: false
+    default: "0.75"
+  docs_path:
+    description: "Path (glob) to documentation markdown files."
+    required: false
+    default: "docs/**/*.md"
+  code_path:
+    description: "Path (glob) to source code files to scan."
+    required: false
+    default: "src/**/*.py"
+  auto_merge_high_confidence:
+    description: "If true, auto-merges the fix PR when all corrections are high-confidence."
+    required: false
+    default: "false"
+  github_token:
+    description: "Token for opening PRs / posting comments. Defaults to the workflow's GITHUB_TOKEN."
+    required: false
+    default: ${{ github.token }}
+
+outputs:
+  stale_sections_found:
+    description: "Count of documentation sections identified as stale."
+  auto_fixed_count:
+    description: "Count of sections auto-corrected."
+  flagged_count:
+    description: "Count of sections flagged for human review."
+  pr_url:
+    description: "URL of the correction PR, if one was opened."
+
+runs:
+  using: "docker"
+  image: "Dockerfile"
+  args:
+    - ${{ inputs.llm_api_key }}
+    - ${{ inputs.llm_provider }}
+    - ${{ inputs.llm_model }}
+    - ${{ inputs.confidence_threshold }}
+    - ${{ inputs.docs_path }}
+    - ${{ inputs.code_path }}
+    - ${{ inputs.auto_merge_high_confidence }}
+    - ${{ inputs.github_token }}
