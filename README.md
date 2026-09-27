@@ -1,4 +1,4 @@
-# 🔄 Self-Healing Technical Documentation
+# Self-Healing Technical Documentation
 
 > A GitHub Action that detects when source-code changes make technical documentation stale, automatically generates high-confidence documentation fixes, and opens a pull request for review.
 
